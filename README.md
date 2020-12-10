@@ -17,4 +17,4 @@ learning_rate = 5e-5\
 Batch size = 16\
 \
 Test Details -\
-run generate.sh\
+run generate.sh
