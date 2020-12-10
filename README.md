@@ -1,6 +1,6 @@
 # TextGen
 The input format for training -
-<BOS> source discrepancy <SEP> corrective action <EOS>
+\<BOS> source sentence \<SEP> target sentence <EOS> \\
 
 At test -
 <BOS> source discrepancy <SEP>
