@@ -11,7 +11,7 @@ run train.sh\
 Num of training examples = 21861\
 Num of validation examples = 7291\
 Num of test examples = 3321\
-stop_token=\'\<EOS>'\
+stop_token=\'\<EOS>'
 
 \
 Test Details -\
