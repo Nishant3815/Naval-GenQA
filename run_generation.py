@@ -21,8 +21,7 @@
 import argparse
 import logging
 import csv
-import time
-
+from tqdm import tqdm
 import numpy as np
 import torch
 
@@ -41,11 +40,11 @@ from transformers import (
     XLNetTokenizer,
 )
 
-from tqdm import tqdm
-
 
 logging.basicConfig(
-    format="%(asctime)s - %(levelname)s - %(name)s -   %(message)s", datefmt="%m/%d/%Y %H:%M:%S", level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(name)s -   %(message)s",
+    datefmt="%m/%d/%Y %H:%M:%S",
+    level=logging.INFO,
 )
 logger = logging.getLogger(__name__)
 
@@ -63,7 +62,7 @@ MODEL_CLASSES = {
 # Padding text to help Transformer-XL and XLNet with short prompts as proposed by Aman Rusia
 # in https://github.com/rusiaaman/XLNet-gen#methodology
 # and https://medium.com/@amanrusia/xlnet-speaks-comparison-to-gpt-2-ea1a4e9ba39e
-PADDING_TEXT = """ In 1991, the remains of Russian Tsar Nicholas II and his family
+PREFIX = """In 1991, the remains of Russian Tsar Nicholas II and his family
 (except for Alexei and Maria) are discovered.
 The voice of Nicholas's young son, Tsarevich Alexei Nikolaevich, narrates the
 remainder of the story. 1883 Western Siberia,
@@ -110,6 +109,8 @@ def prepare_xlm_input(args, model, tokenizer, prompt_text):
             language = None
             while language not in available_languages:
                 language = input("Using XLM. Select language in " + str(list(available_languages)) + " >>> ")
+
+        model.config.lang_id = model.config.lang2id[language]
         # kwargs["language"] = tokenizer.lang2id[language]
 
     # TODO fix mask_token_id setup when configurations will be synchronized between models and tokenizers
@@ -122,13 +123,15 @@ def prepare_xlm_input(args, model, tokenizer, prompt_text):
 
 
 def prepare_xlnet_input(args, _, tokenizer, prompt_text):
-    prompt_text = (args.padding_text if args.padding_text else PADDING_TEXT) + prompt_text
-    return prompt_text, {}
+    prefix = args.prefix if args.prefix else args.padding_text if args.padding_text else PREFIX
+    prompt_text = prefix + prompt_text
+    return prompt_text
 
 
 def prepare_transfoxl_input(args, _, tokenizer, prompt_text):
-    prompt_text = (args.padding_text if args.padding_text else PADDING_TEXT) + prompt_text
-    return prompt_text, {}
+    prefix = args.prefix if args.prefix else args.padding_text if args.padding_text else PREFIX
+    prompt_text = prefix + prompt_text
+    return prompt_text
 
 
 PREPROCESSING_FUNCTIONS = {
@@ -182,20 +185,33 @@ def main():
     parser.add_argument("--k", type=int, default=0)
     parser.add_argument("--p", type=float, default=0.9)
 
-    parser.add_argument("--padding_text", type=str, default="", help="Padding text for Transfo-XL and XLNet.")
+    parser.add_argument("--prefix", type=str, default="", help="Text added prior to input.")
+    parser.add_argument("--padding_text", type=str, default="", help="Deprecated, the use of `--prefix` is preferred.")
     parser.add_argument("--xlm_language", type=str, default="", help="Optional language when used with the XLM model.")
 
     parser.add_argument("--seed", type=int, default=42, help="random seed for initialization")
     parser.add_argument("--no_cuda", action="store_true", help="Avoid using CUDA when available")
-
+    parser.add_argument("--num_return_sequences", type=int, default=1, help="The number of samples to generate.")
+    parser.add_argument(
+        "--fp16",
+        action="store_true",
+        help="Whether to use 16-bit (mixed) precision (through NVIDIA apex) instead of 32-bit",
+    )
     args = parser.parse_args()
 
-    with open('test-x.csv', 'r') as file:
+    with open('/home/sangeethabal/gpt2/test-x.csv', 'r') as file:
         lines = list(csv.reader(file))
     lines = lines[1:]
 
     args.device = torch.device("cuda" if torch.cuda.is_available() and not args.no_cuda else "cpu")
-    args.n_gpu = torch.cuda.device_count()
+    args.n_gpu = 0 if args.no_cuda else torch.cuda.device_count()
+
+    logger.warning(
+        "device: %s, n_gpu: %s, 16-bits training: %s",
+        args.device,
+        args.n_gpu,
+        args.fp16,
+    )
 
     set_seed(args)
 
@@ -210,45 +226,76 @@ def main():
     model = model_class.from_pretrained(args.model_name_or_path)
     model.to(args.device)
 
+    if args.fp16:
+        model.half()
+
     args.length = adjust_length_to_model(args.length, max_sequence_length=model.config.max_position_embeddings)
     logger.info(args)
 
-    start_time = time.time()
     reasons = list()
+    #with open('test_answers.csv', 'w') as file:
+     #   writer = csv.writer(file)
+      #  idx = 0
+
     for line in tqdm(lines):
         prompt_text = line[1].strip() + ' <SEP>'
 
-        # Different models need different input formatting and/or extra arguments
+    # prompt_text = args.prompt if args.prompt else input("Model prompt >>> ")
+
+    # Different models need different input formatting and/or extra arguments
         requires_preprocessing = args.model_type in PREPROCESSING_FUNCTIONS.keys()
         if requires_preprocessing:
             prepare_input = PREPROCESSING_FUNCTIONS.get(args.model_type)
-            prompt_text = prepare_input(args, model, tokenizer, prompt_text)
+            preprocessed_prompt_text = prepare_input(args, model, tokenizer, prompt_text)
+
+            if model.__class__.__name__ in ["TransfoXLLMHeadModel"]:
+                tokenizer_kwargs = {"add_space_before_punct_symbol": True}
+            else:
+                tokenizer_kwargs = {}
+
+            encoded_prompt = tokenizer.encode(
+                preprocessed_prompt_text, add_special_tokens=False, return_tensors="pt", **tokenizer_kwargs
+            )
+        # else:
+        #     prefix = args.prefix if args.prefix else args.padding_text
         encoded_prompt = tokenizer.encode(prompt_text, add_special_tokens=False, return_tensors="pt")
         encoded_prompt = encoded_prompt.to(args.device)
 
+        if encoded_prompt.size()[-1] == 0:
+            input_ids = None
+        else:
+            input_ids = encoded_prompt
+
         output_sequences = model.generate(
             input_ids=encoded_prompt,
-            max_length=args.length,
+            max_length=args.length + len(encoded_prompt[0]),
             temperature=args.temperature,
             top_k=args.k,
             top_p=args.p,
             repetition_penalty=args.repetition_penalty,
-        )
+            do_sample=True,
+            )
 
-        # Batch size == 1. to add more examples please use num_return_sequences > 1
+        # Remove the batch dimension when returning multiple sequences
+        if len(output_sequences.shape) > 2:
+            output_sequences.squeeze_()
+
         generated_sequence = output_sequences[0].tolist()
         text = tokenizer.decode(generated_sequence, clean_up_tokenization_spaces=True)
         text = text[: text.find(args.stop_token) if args.stop_token else None]
 
         reasons.append(text.split('<SEP>')[1].strip())
-    end_time = time.time()
-    print('Evaluation time:', end_time - start_time, 'seconds')
 
-    with open('test_answers.csv', 'w') as file:
-        writer = csv.writer(file)
+        with open('test_answers_sampling.csv', 'w') as file:
+            writer = csv.writer(file)
 
-        for idx, reason in enumerate(reasons):
-            writer.writerow([idx + 1, reason])
+            for idx, reason in enumerate(reasons):
+                writer.writerow([idx + 1, reason])
+
+        #writer.writerow([idx + 1, text.split('<SEP>')[1].strip()])
+        #idx += 1
+
+    return reasons
 
 
 if __name__ == "__main__":
