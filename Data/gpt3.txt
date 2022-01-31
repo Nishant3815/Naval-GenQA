@@ -1,0 +1,25 @@
+<DISCREPANCY> yellow damper female qd b-nut is leaking. <ACTION> removed and replaced yellow damper female qd iaw a1-h60ra-150-300. all checks good. area secure and fod free at time of inspection.
+<DISCREPANCY> admin remove black blade <ACTION> removed black blade iaw 150-300. all checks good. area secure and fod check complete.
+<DISCREPANCY> install blue main rotor blade tip cap assembly as directed by maintenance control. <ACTION> verified blue main rotor blade tip cap installation on new main rotor blade iaw 150-300 pema 6fksa75997. area is secure and fod free.
+<DISCREPANCY> lh nlg tire worn beyond limits <ACTION> removed and replaced lh nlg tire assy iaw sss3240 pema01913 ataf apaf aff
+<DISCREPANCY> black hub centering sockets worn. card d-119.1 <ACTION> removed and replaced black hub centering sockets iaw a1-h60ra-150-300. area fod free and secure at time of inspection.
+<DISCREPANCY> black blade bim bad.  reads black <ACTION> removed and replaced black bim. bim indicator holds pressure. ref: 150-300. area is secured and fod free pema 8fkka48475.
+<DISCREPANCY> main rotor damper yellow inbd and otbd bearing ool. <ACTION> removed and replaced inbd and outbd main rotor damper bearings iaw a1-h60ra-150-300. checks good. area fod free and secure.
+<DISCREPANCY> tail rotor vibes out of limits. <ACTION> made adjustments to tail rotor iaw vib-200. added 84 grams to quadrant 3, area is clean and fod free. pema s/n: 6fksa76326.
+<DISCREPANCY> red blade lower centering socket has play <ACTION> inspeted red main rotor lower centering socket play iaw 150-300. installed new shims. installed safety wire on bolts. area secure and fod free at time of inspection.
+<DISCREPANCY> evidence of fluid on main rotor pylon/uniball/swashplate <ACTION> inspected area around uniball/swashplate. found yellow damper qd leaking. refer to mcn: 00jfykw for r/r of quick disconnect. area secure and fod free.
+<DISCREPANCY> mrh accumulator low <ACTION> serviced  mrh accumulator using hsu 257 navy class 2 iaw a1-h60ra-gai-000. hydraulic side in the high green. nitrogen side: 1600 psi. ambient air temp: 19 degrees celcius. a/c time now 2847.5 all checks good, area secure and fod free at time of completion
+<DISCREPANCY> remove black spindle assembly to facilitate replacement of elastomeric bearing. reinstall when directed by maintenance control. <ACTION> removed and reinstalled black spindle assembly s/n b246-00206 iaw 150-300. all checks good. torqued. area secure and fod free at the time of inspection. pema 76544
+<DISCREPANCY> mrh accumulator low <ACTION> serviced mrh accumulator low iaw gai-000. hyd side gauge reads high green and n2 side gauge reads 1550 psi. oat at time of servicing is 18* c. a/c hrs:1033.7. navy class 2. checks good. area fod free and secure.
+<DISCREPANCY> lh outboard tire worn to the bottm of the tread groove <ACTION> removed and replaced lh ob tire iaw sss 3210.
+<DISCREPANCY> blue damper bearings worn <ACTION> removed and replaced blue damper iaw 150-300. checks good. area secure and fod free at time of inspection.
+<DISCREPANCY> aft upper link of siccor out of limits <ACTION> replaced upper scissor link iaw 150-300. area clean and fod free.
+<DISCREPANCY> yellow tail rotor blade bias out of limits, measured 2.8 degrees. <ACTION> adjusted yellow tail rotor blade to 3.0 iaw a1-h60ra-140-300. tr 3 degree bias checks good. area fod free and secure.
+<DISCREPANCY> blue main rotor blade cuff hysol disbonding. <ACTION> applied hysol to blue main rotor blade cuff iaw srm-000 . area secure and fod free.
+<DISCREPANCY> nlg torque tube bad <ACTION> replaced nlg torque tube iaw: sss 3220. used pema 99958. ataf apaf aff.
+<DISCREPANCY> sealant on trb disbonding revealing hole on yellow tail rotor paddle <ACTION> verified and applied sealant on trb hole iaw srm-000. area fod free and secure.
+<DISCREPANCY> main rotor head low <ACTION> serviced main rotor head accumulator to high green at 1450 psi iaw a1-h60ra-gai-000. oat: 29  degrees celcius. current flight time: 1137.7. area secure and fod free at time of servicing.
+<DISCREPANCY> black lower centering socket loose <ACTION> reshimmed black lower centering socket iaw 150-300. area secure  refer to jcn b00085105 for fod inspection.
+<DISCREPANCY> mrh accumulator in red <ACTION> serviced mrh accumulator to1600 low high green iaw gai-000. ac flight hours are 3875.1. oat is currently 19 degrees celcius. area secure and fod free.
+<DISCREPANCY> perform full bleed and service main rotor head accumulator <ACTION> performed full bleed and service on main rotor head accumulator iaw gai-000.  fluid side is in the yellow nitrogen is at 1600 psi and the oat is at 31 degrees celcius.  all checks good.  area secure and fod free at time of inspection.
+<DISCREPANCY> rh nlg tire diametere not within 1/4 of an inch of lh nlg tire <ACTION> removed and replaced rh nlg tire iaw sss 3240.
